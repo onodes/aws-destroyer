@@ -57,12 +57,12 @@ internet_gateways.internet_gateways.map{|internet_gateway|
 }
 
 elastic_ip_list = ec2_client.describe_addresses
-elastic_ip_list.addresses.map{|elastic_ip|
-  public_ip = addresses.first.public_ip
-  allocation_id = addresses.first.allocation_id
-
-  ec2_client.release_address({
-    public_ip: public_ip,
-    allocation_id: allocation_id
-  })
+elastic_ip_list.map{|elastic_ip|
+  addresses = elastic_ip.addresses
+  unless addresses.nil? then
+    allocation_id = addresses.first.allocation_id
+    ec2_client.release_address({
+      allocation_id: allocation_id
+      })
+  end
 }
