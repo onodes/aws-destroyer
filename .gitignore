@@ -1,0 +1,6 @@
+aws-accounts.json
+Gemfile.lock
+*.gem
+*.rbc
+*.swp
+.bundle
