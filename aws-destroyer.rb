@@ -15,7 +15,7 @@ REGION = aws_accounts["REGION"]
 credentials = Aws::Credentials.new(ACCESS_ID, SECRET_ACCESS_KEY)
 creds = {region: REGION, credentials: credentials}
 
-#deleting ec2
+#deleting ec2 instances
 ec2_client = Aws::EC2::Client.new(creds)
 ec2_resource = Aws::EC2::Resource.new(creds)
 instance_list = ec2_resource.instances
@@ -26,7 +26,7 @@ instance_list.map{|instance|
   })
 }
 
-#deleting nat gateway
+#deleting nat gateways
 elb_client = Aws::ElasticLoadBalancing::Client.new(creds)
 lb_list = elb_client.describe_load_balancers
 pp lb_list
@@ -35,7 +35,7 @@ lb_list[:load_balancer_descriptions].map{|load_balancer|
   elb_client.delete_load_balancer({load_balancer_name: load_balancer_name})
 }
 
-#deleting nat gateway
+#deleting nat gateways
 nat_gateways = ec2_client.describe_nat_gateways
 nat_gateways.nat_gateways.map{|nat_gateway|
   ec2_client.delete_nat_gateway({
@@ -43,7 +43,7 @@ nat_gateways.nat_gateways.map{|nat_gateway|
   })
 }
 
-#deleting internet gateway
+#deleting internet gateways
 internet_gateways = ec2_client.describe_internet_gateways
 internet_gateways.internet_gateways.map{|internet_gateway|
   ec2_client.detach_internet_gateway({
@@ -56,6 +56,7 @@ internet_gateways.internet_gateways.map{|internet_gateway|
   })
 }
 
+#deleting elastic ips
 elastic_ip_list = ec2_client.describe_addresses
 elastic_ip_list.map{|elastic_ip|
   addresses = elastic_ip.addresses
