@@ -26,11 +26,43 @@ instance_list.map{|instance|
   })
 }
 
-#ELB delete
+#deleting nat gateway
 elb_client = Aws::ElasticLoadBalancing::Client.new(creds)
 lb_list = elb_client.describe_load_balancers
 pp lb_list
 lb_list[:load_balancer_descriptions].map{|load_balancer|
   load_balancer_name = load_balancer.load_balancer_name
   elb_client.delete_load_balancer({load_balancer_name: load_balancer_name})
+}
+
+#deleting nat gateway
+nat_gateways = ec2_client.describe_nat_gateways
+nat_gateways.nat_gateways.map{|nat_gateway|
+  ec2_client.delete_nat_gateway({
+    nat_gateway_id: nat_gateway[:nat_gateway_id]
+  })
+}
+
+#deleting internet gateway
+internet_gateways = ec2_client.describe_internet_gateways
+internet_gateways.internet_gateways.map{|internet_gateway|
+  ec2_client.detach_internet_gateway({
+    internet_gateway_id: internet_gateway.internet_gateway_id,
+    vpc_id: internet_gateway.attachments.first.vpc_id
+  })
+
+  ec2_client.delete_internet_gateway({
+    internet_gateway_id: internet_gateway.internet_gateway_id
+  })
+}
+
+elastic_ip_list = ec2_client.describe_addresses
+elastic_ip_list.addresses.map{|elastic_ip|
+  public_ip = addresses.first.public_ip
+  allocation_id = addresses.first.allocation_id
+
+  ec2_client.release_address({
+    public_ip: public_ip,
+    allocation_id: allocation_id
+  })
 }
